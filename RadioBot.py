@@ -4,10 +4,11 @@ import subprocess
 
 class RadioBot(ClientXMPP):
 
-    def __init__(self, jid, password, channel, nick):
+    def __init__(self, jid, password, channel, nick, whitelist):
 
-        self.channel = channel;
-        self.nick = nick;
+        self.whitelist = whitelist
+        self.channel = channel
+        self.nick = nick
 
         ClientXMPP.__init__(self, jid, password)
 
@@ -26,21 +27,31 @@ class RadioBot(ClientXMPP):
 
     def handle_group_message(self, msg):
         if msg['type'] in ('groupchat', 'normal'):
-            body = msg['body']
-            if self.nick in body:
-                if "play radio" in body:
-                    self.handle_play_radio(body)
-                if "stop" in body:
-                    self.handle_stop(body)
+            send_from = msg['from']
+            send_name = send_from.resource.lower()
+            if not self.whitelist or send_name in self.whitelist:
+                body = msg['body']
+                if self.nick in body:
+                    if "play radio" in body:
+                        self.handle_play_radio(body)
+                    if "stop" in body:
+                        self.handle_stop(body)
+                    if "play file" in body:
+                        self.handle_play_file(body)
 
 
     def handle_play_radio(self, command):
         station = command.split()[-1]
-        cmd = "mplayer -playlist " + station +"&"
+        cmd = "mplayer -playlist " + station +" &"
         self.run_command(cmd)
 
     def handle_stop(self, command):
         cmd = "pkill -f mplayer"
+        self.run_command(cmd)
+
+    def handle_play_file(self, command):
+        file = command.split()[-1]
+        cmd = "mplayer " + file + " &"
         self.run_command(cmd)
 
     def run_command(self, command):

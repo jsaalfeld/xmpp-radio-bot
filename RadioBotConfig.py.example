@@ -2,3 +2,4 @@ password = ""
 user = ""
 channel =""
 nick = ""
+whitelist = []
