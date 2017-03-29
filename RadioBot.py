@@ -38,7 +38,10 @@ class RadioBot(ClientXMPP):
                         self.handle_stop(body)
                     if "play file" in body:
                         self.handle_play_file(body)
-
+                    if "set volume" in body:
+                        self.handle_set_volume(body)
+                    if "mute" in body:
+                        self.handle_set_volume("set volume 0%")
 
     def handle_play_radio(self, command):
         station = command.split()[-1]
@@ -52,6 +55,11 @@ class RadioBot(ClientXMPP):
     def handle_play_file(self, command):
         file = command.split()[-1]
         cmd = "mplayer " + file + " &"
+        self.run_command(cmd)
+
+    def handle_set_volume(self, command):
+        volume = command.split()[-1]
+        cmd = "amixer sset 'Master' " + volume
         self.run_command(cmd)
 
     def run_command(self, command):
