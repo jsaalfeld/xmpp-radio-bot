@@ -1,0 +1,7 @@
+class RadioBotConfig():
+
+    def __init__(self):
+        self.password = "";
+        self.user = "";
+        self.channel ="";
+        self.nick =";"
