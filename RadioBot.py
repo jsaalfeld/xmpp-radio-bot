@@ -45,4 +45,4 @@ class RadioBot(ClientXMPP):
 
     def run_command(self, command):
         print("execute: " + command)
-        subprocess.run(command, shell=True)
+        subprocess.Popen(command, shell=True)
