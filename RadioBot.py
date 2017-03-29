@@ -1,6 +1,6 @@
 import logging
 from sleekxmpp import ClientXMPP
-from subprocess import call
+import subprocess
 
 class RadioBot(ClientXMPP):
 
@@ -28,9 +28,21 @@ class RadioBot(ClientXMPP):
         if msg['type'] in ('groupchat', 'normal'):
             body = msg['body']
             if self.nick in body:
-                if "command" in body:
-                    self.handle_message_command(body.split())
-            print(msg['body'])
+                if "play radio" in body:
+                    self.handle_play_radio(body)
+                if "stop" in body:
+                    self.handle_stop(body)
 
-    def handle_message_command(self, command):
-        call(command)
+
+    def handle_play_radio(self, command):
+        station = command.split()[-1]
+        cmd = "mplayer -playlist " + station +"&"
+        self.run_command(cmd)
+
+    def handle_stop(self, command):
+        cmd = "pkill -f mplayer"
+        self.run_command(cmd)
+
+    def run_command(self, command):
+        print("execute: " + command)
+        subprocess.run(command, shell=True)
